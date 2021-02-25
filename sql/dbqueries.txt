@@ -1,0 +1,9 @@
+CREATE DATABASE mat;
+===========================
+CREATE TABLE app_user (
+	user_id bigserial PRIMARY KEY,
+        full_name 	VARCHAR ( 100 ),
+	email 		VARCHAR ( 255 ) UNIQUE NOT NULL,
+	mobile_num 	VARCHAR ( 15 ),
+	password 	VARCHAR ( 50 ) NOT NULL
+);

@@ -1,0 +1,195 @@
+{% extends "layout.html"%} 
+{% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div style="margin-left: 40%;text-align: center;">
+            <div class="col-lg-6 mb-4">
+                <div class="bg-{{ category }} text-white shadow">
+                    <div class="alert-dismissible close" onclick="this.parentElement.style.display='none';">&times;</div>
+                    <div class="card-body">
+                        <strong>{{ category }}!</strong> 
+                        <div class="text-white-70 small">{{ message }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+<head>
+    <!-- <meta http-equiv="refresh" content="60"> -->
+</head>
+<body>   
+    <div class="container-fluid">
+            <!-- Content Row -->
+        <div class="row">
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    No of Clients</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ client_count }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    P&L (Today)</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">₹ {{ total_pnl }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Trades
+                                </div>
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ total_trades }}</div>
+                                    </div>
+                                    <!-- <div class="col">
+                                        <div class="progress progress-sm mr-2">
+                                            <div class="progress-bar bg-info" role="progressbar"
+                                                style="width: 70%" aria-valuenow="70" aria-valuemin="0"
+                                                aria-valuemax="100"></div>
+                                        </div>
+                                    </div> -->
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Requests Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Total Orders Today</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_orders }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow mb-4">
+            <div class="card-header row">
+                <h4 class="h4 mb-0 text-gray-800">Today's Summary</h4>
+                <div class="col">
+                    <a style= "float:right;" onclick="download_table_as_csv('Data_table');" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                        class="fas fa-download fa-sm text-white-50"></i> Download</a>
+                    <form action="/monitoring" method='post'>
+                        <lable for="pnl_monitor_status">Auto Cut Off </lable><i class="fas fa-desktop fa-sm text-white-50"></i>
+                        {% if pnl_monitor=='True' %}
+                            <input type="hidden" name="monitoring" id="monitoring" value="False">
+                            <button type="submit" id="pnl_monitor_status" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm">Active</button>
+                        {% else %}
+                            <input type="hidden" name="monitoring" id="monitoring" value="True">
+                            <button type="submit" id="pnl_monitor_status" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm">In Active</button>
+                        {% endif%}
+                    </form>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="Data_table" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Broker</th>
+                                <th>Client Name</th>
+                                <th>Login Status</th>
+                                <th>Account Balance</th>
+                                <th>Today's P&L</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for client in client_list %}
+                                <tr>
+                                    <td>{{ client.broker_name }}</td>
+                                    <td>{{ client.client_name }}</td>
+                                    <td style="text-align: center;">
+                                        {% if client.login_status == 'Active' %}
+                                            <div class="led-green"></div>
+                                        {% else %}
+                                            <div class="led-red"></div>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ client.client_balance }}</td>
+                                    <td>{{ client.client_pnl }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>    
+</body>
+<script>
+    // Quick and simple export target #table_id into a csv
+    function download_table_as_csv(table_id, separator = ',') {
+        // Select rows from table_id
+        var rows = document.querySelectorAll('table#' + table_id + ' tr');
+        // Construct csv
+        var csv = [];
+        for (var i = 0; i < rows.length; i++) {
+            var row = [], cols = rows[i].querySelectorAll('td, th');
+            for (var j = 0; j < cols.length; j++) {
+                // Clean innertext to remove multiple spaces and jumpline (break csv)
+                var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+                // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+                data = data.replace(/"/g, '""');
+                // Push escaped string
+                row.push('"' + data + '"');
+            }
+            csv.push(row.join(separator));
+        }
+        var csv_string = csv.join('\n');
+        // Download it
+        var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+        var link = document.createElement('a');
+        link.style.display = 'none';
+        link.setAttribute('target', '_blank');
+        link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+{% endblock content %}

@@ -1,0 +1,120 @@
+{% extends "layout.html"%} 
+{% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="margin-left: 40%;text-align: center;">
+                    <div class="col-lg-6 mb-4">
+                        <div class="bg-{{ category }} text-white shadow">
+                            <div class="alert-dismissible close" onclick="this.parentElement.style.display='none';">&times;</div>
+                            <div class="card-body">
+                                <strong>{{ category }}!</strong> 
+                                <div class="text-white-70 small">{{ message }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+<body>   
+    <div class="container-fluid">
+        <div class="row">
+            <h3>Auto Trading Setup</h3>
+            <i class="fas fa-laptop fa-2x text-gray-300"></i>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 border-left-success">
+                        <h6 class="m-0 font-weight-bold text-primary">Chartlink Settings</h6>
+                    </div>
+                    <div class="card-body border-left-success">
+                        <form action="/set_auto_trade" method='post'>
+                            {% if cl_trade=='yes' %}
+                                <input id="cl_trade" type="checkbox" class="largerCheckbox" name="cl_trade" checked onchange="this.form.submit()">
+                                &nbsp;
+                                <label for="cl_trade" style="font-size: 20px;"><strong>Chartlink</strong>(on/off)</label>
+                                <input type="hidden" id="cl_trade_val" name="cl_trade_val" value = 'no'>
+                            {% else %}
+                                <input id="cl_trade" type="checkbox" class="largerCheckbox" name="cl_trade" onchange="this.form.submit()">
+                                &nbsp;
+                                <label for="cl_trade" style="font-size: 20px;"><strong>Chartlink</strong>(on/off)</label>
+                                <input type="hidden" id="cl_trade_val" name="cl_trade_val" value = 'yes'>
+                            {% endif %}
+                        </form>
+                        <form action="/set_auto_trade" method='post' id="cl_setting" onsubmit="return validateForm()">
+                            <div class="row no-gutters">
+                                <div class="container-fluid">
+                                    <label style="font-size: 16px;" for="cl_tf">Timeframe(Minutes):</label>
+                                    <input style="float:right;width:32%;" type="number" class="form-control" id="cl_tf" name="cl_tf" value={{ cl_tf }} onchange="updater()">
+                                </div>
+                            </div>
+                            <div class="row no-gutters" style="padding-top: 2%;">
+                                <div class="container-fluid">
+                                    <label style="font-size: 16px;" for="cl_bf">Price Buffer(%):</label>
+                                    <input style="float:right;width:32%;" type="text" class="form-control" id="cl_bf" name="cl_bf" value={{ cl_bf }} onchange="updater()">
+                                </div>
+                            </div>
+                            <div class="row no-gutters" style="padding-top: 2%;">
+                                <div class="container-fluid">
+                                    <label style="font-size: 16px;" for="cl_start_time">Start Time:</label>
+                                    <input style="float:right;width:32%;" type="time" class="form-control" id="cl_start_time" name="cl_start_time" value={{ cl_start_time }} onchange="updater()">
+                                </div>
+                            </div>
+                            <div class="row no-gutters" style="padding-top: 2%;">
+                                <div class="container-fluid">
+                                    <label style="font-size: 16px;" for="cl_end_time">End Time:</label>
+                                    <input style="float:right;width:32%;" type="time" class="form-control" id="cl_end_time" name="cl_end_time" value={{ cl_end_time }} onchange="updater()">
+                                </div>
+                            </div>
+                            <div style="float: right;padding-top: 2%;">
+                                <button id="update" name="update" class="btn btn-primary btn-sm" type="submit" disabled="true"><i class="text"></i>Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 border-left-info">
+                        <h6 class="m-0 font-weight-bold text-primary">TradingView Settings</h6>
+                    </div>
+                    <div class="card-body border-left-info">
+                        <form action="/set_auto_trade" method='post'>
+                            {% if tv_trade=='yes' %}
+                                <input id="tv_trade" type="checkbox" class="largerCheckbox" name="tv_trade" checked onchange="this.form.submit()">
+                                &nbsp;
+                                <label for="tv_trade" style="font-size: 20px;"><strong>TradingView</strong>(on/off)</label>
+                                <input type="hidden" id="tv_trade_val" name="tv_trade_val" value = 'no'>
+                            {% else %}
+                                <input id="tv_trade" type="checkbox" class="largerCheckbox" name="tv_trade" onchange="this.form.submit()">
+                                &nbsp;
+                                <label for="tv_trade" style="font-size: 20px;"><strong>TradingView</strong>(on/off)</label>
+                                <input type="hidden" id="tv_trade_val" name="tv_trade_val" value = 'yes'>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function validateForm() {
+            var x = document.forms["cl_setting"]["cl_tf"].value;
+            var y = document.forms["cl_setting"]["cl_bf"].value;
+            var p = document.forms["cl_setting"]["cl_start_time"].value;
+            var q = document.forms["cl_setting"]["cl_end_time"].value;
+            if (x == "" || x == null || y == "" || y == null || p == "" || p == null || q == "" || q == null) 
+            {
+                alert("All Fields must be filled");
+                return false;
+            }
+            }
+    function updater() {
+        document.getElementById('update').disabled = false;
+    }
+</script>
+{% endblock content %}

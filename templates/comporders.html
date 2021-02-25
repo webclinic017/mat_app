@@ -1,0 +1,217 @@
+{% extends "layout.html"%} 
+{% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div style="margin-left: 40%;text-align: center;">
+                <div class="col-lg-6 mb-4">
+                    <div class="bg-{{ category }} text-white shadow">
+                        <div class="alert-dismissible close" onclick="this.parentElement.style.display='none';">&times;</div>
+                        <div class="card-body">
+                            <strong>{{ category }}!</strong>
+                            <div class="text-white-70 small">{{ message }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+<body>
+    <!-- Begin Page Content -->
+        <br>
+        <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#AliceBlue">AliceBlue</a>
+        </li>
+        <!-- Second Tab for other brokers -->
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#Other">Other</a>
+        </li>
+        </ul>
+    
+        <!-- Tab panes -->
+        <div class="tab-content">           
+            <div id="AliceBlue" class="container-fluid tab-pane active"><br>
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h4 class="h4 mb-0 text-gray-800">Today's Orders</h4>
+                    <a style= "float:right;" onclick="download_table_as_csv('Aliceblue_completed_Orders');" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                        class="fas fa-download fa-sm text-white-50"></i> Download Report</a>
+                </div>
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#completed">Completed Orders</a>
+                    </li>
+                    <!-- Second Tab for other brokers -->
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#pending">Pending Orders</a>
+                    </li>
+                </ul>
+                    <!-- Order Tab panes -->
+                <div class="tab-content">           
+                    <div id="completed" class="container-fluid tab-pane active">
+                        <div class="card shadow mb-4">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="Aliceblue_completed_Orders" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>Symbol</th>
+                                                <th>Side</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Product Type</th>
+                                                <th>Order Type</th>
+                                                <th>Client</th>
+                                                <th>Order Time </th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for order in order_completed_list %}
+                                                <tr>
+                                                    <td>{{ order.trading_symbol }} - {{ order.exchange }}</td>
+                                                    <td>{{ order.transaction_type }}</td>
+                                                    <td>{{ order.quantity }}</td>
+                                                    <td>{{ order.price }}</td>
+                                                    <td>{{ order.product_type }}</td>
+                                                    <td>{{ order.order_type }}</td>
+                                                    <td>{{ order.client_id }}</td>
+                                                    <td>{{ order.order_entry_time }}</td>
+                                                    <td>{{ order.order_status }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="pending" class="container-fluid tab-pane fade">
+                        <!-- Pending Order DataTable -->
+                        <div class="card shadow mb-4">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="Aliceblue_pending_Orders" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>Symbol</th>
+                                                <th>Side</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Product Type</th>
+                                                <th>Order Type</th>
+                                                <th>Client</th>
+                                                <th>Order Time </th>
+                                                <th>Status</th>
+                                                <th>Cancel</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                {% for order in order_pending_list %}
+                                                    <tr>
+                                                        <td>{{ order.trading_symbol }} - {{ order.exchange }}</td>
+                                                        <td>{{ order.transaction_type }}</td>
+                                                        <td>{{ order.quantity }}</td>
+                                                        <td>{{ order.price }}</td>
+                                                        <td>{{ order.product_type }}</td>
+                                                        <td>{{ order.order_type }}</td>
+                                                        <td>{{ order.client_id }}</td>
+                                                        <td>{{ order.order_entry_time }}</td>
+                                                        <td>{{ order.order_status }}</td>
+                                                        <form action="/cancelorder" method="post">
+                                                            <input type="hidden" value="{{ order.client_id }}" name="client_id">
+                                                            <input type="hidden" value="{{ order.oms_order_id }}" name="oms_order_id">
+                                                            <td class="text-center"><button class="btn btn-danger btn-circle" type="submit"><i class="fas fas fa-trash" ></i></button></td>
+                                                        </form>
+                                                    </tr>
+                                                {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Second Integrated Broker -->
+            <div id="Other" class="container-fluid tab-pane fade"><br>
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h4 class="h4 mb-0 text-gray-800">All Orders</h4>
+                    <a onclick="download_table_as_csv('Other_Orders');" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                            class="fas fa-download fa-sm text-white-50"></i> Download Report</a>
+                </div>
+                <!-- DataTales Example -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Today's Orders</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="Other_Orders" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Side</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Product Type</th>
+                                        <th>Order Type</th>
+                                        <th>Client</th>
+                                        <th>Order Time </th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+<script>
+    // Quick and simple export target #table_id into a csv
+    function download_table_as_csv(table_id, separator = ',') {
+        // Select rows from table_id
+        var rows = document.querySelectorAll('table#' + table_id + ' tr');
+        // Construct csv
+        var csv = [];
+        for (var i = 0; i < rows.length; i++) {
+            var row = [], cols = rows[i].querySelectorAll('td, th');
+            for (var j = 0; j < cols.length; j++) {
+                // Clean innertext to remove multiple spaces and jumpline (break csv)
+                var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+                // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+                data = data.replace(/"/g, '""');
+                // Push escaped string
+                row.push('"' + data + '"');
+            }
+            csv.push(row.join(separator));
+        }
+        var csv_string = csv.join('\n');
+        // Download it
+        var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+        var link = document.createElement('a');
+        link.style.display = 'none';
+        link.setAttribute('target', '_blank');
+        link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+{% endblock content %}

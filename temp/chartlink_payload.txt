@@ -1,0 +1,9 @@
+{
+    "stocks": "SEPOWER,ASTEC,EDUCOMP,KSERASERA,IOLCP,GUJAPOLLO,EMCO",
+    "trigger_prices": "3.75,541.8,2.1,0.2,329.6,166.8,1.25",
+    "triggered_at": "2:34 pm",
+    "scan_name": "short-term-breakouts",
+    "scan_url": "short-term-breakouts",
+    "alert_name": "NSE,buy",
+    "webhook_url": "https://mat-rajan-app.herokuapp.com/chartlink_webhook"
+}

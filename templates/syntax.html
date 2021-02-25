@@ -1,0 +1,167 @@
+{% extends "layout.html"%} 
+{% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div style="margin-left: 40%;text-align: center;">
+            <div class="col-lg-6 mb-4">
+                <div class="bg-{{ category }} text-white shadow">
+                    <div class="alert-dismissible close" onclick="this.parentElement.style.display='none';">&times;</div>
+                    <div class="card-body">
+                        <strong>{{ category }}!</strong> 
+                        <div class="text-white-70 small">{{ message }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <head>
+        <script src="/static/js/autocomplete.js"></script>
+    </head>
+<body>
+    <div class="container-fluid">
+        <h3>TradingView Syntax Generator</h3>
+        <form class="user" action='/syntax' method='POST' id="syntax" onsubmit="return validateeditForm()">
+            <div class="form-group row">
+                <div class="col-sm mb-3 mb-sm-0">
+                    <label for="broker">Broker</label><select class="form-control" id="broker" name="broker">
+                        <option selected>AliceBlue</option>
+                    </select>
+                </div>
+                <div class="col-sm">
+                    <label for="symbol">Symbol</label>
+                    <input type="text" class="form-control autocomplete" id="symbol" name="symbol" autocomplete="false">
+                </div>
+                <div class="col-sm">
+                    <label for="exchange">Exchange</label><select class="form-control" id="exchange" name="exchange">
+                        <option>NSE</option>
+                        <option>NFO</option>
+                        <option>MCX</option>
+                        <option>BSE</option>
+                        <option>CDS</option>
+                    </select>
+                </div>
+                <div class="col-sm">
+                    <label for="product_type">Product Type</label><select class="form-control" id="product_type" name="product_type">
+                        <option value= "ProductType.Intraday">Intraday (MIS)</option>
+                        <option value= "ProductType.Delivery">Delivery (CNC)</option>
+                        <option value= "ProductType.CoverOrder">CoverOrder (CO)</option>
+                        <option value= "ProductType.BracketOrder">BracketOrder (BO)</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div class="form-group row">
+                <div class="col-sm mb-3 mb-sm-0">
+                    <label for="quantity_type">Quantity Type</label><select class="form-control" id="quantity_type" name="quantity_type">
+                        <option value= "Auto">Auto</option>
+                        <option value= "Manual">TradingView</option>
+                    </select>
+                </div>
+                <div class="col-sm">
+                    <label for="order_type">Order Type</label><select class="form-control" id="order_type" name="order_type">
+                        <option value="OrderType.Market" >Market</option>
+                        <option value="OrderType.Limit" >Limit</option>
+                        <option value="OrderType.StopLossMarket">Stop Loss Market</option>
+                        <option value="OrderType.StopLossLimit">Stop Loss Limit</option>
+                    </select>
+                </div>
+                <div class="col-sm">
+                    <br>
+                </div>
+                <div class="col-sm">
+                    <button type="submit" style="height:45px;width:200px" class="btn btn-primary btn-user btn-block">
+                        Generate Syntax
+                    </button>
+                </div>
+            </div>
+        </form>
+            <hr>
+            <div class="form-group row">
+                <div class="col-sm mb-3 mb-sm-0">
+                    <label for="TV-alice Syntax">TV Message Syntax</label><textarea class="form-control" id="TV-alice Syntax" rows="3">
+                        {
+                            "broker": "{{ broker }}",
+                            "time": "{{ '{{' }}timenow{{ '}}' }}",
+                            "exchange": "{{ exchange_val }}",
+                            "symbol": "{{ symbol }}",
+                            "quantity_type": "{{ quantity_type }}",
+
+                            "strategy": {
+                            "order_contracts": {{'{{'}}strategy.order.contracts{{ '}}' }},
+                            "order_price": {{ '{{' }}strategy.order.price{{ '}}' }},
+                            "order_action": "{{ '{{' }}strategy.order.action{{ '}}' }}",      
+                            "order_type": "{{ order_type_val }}",
+                            "product_type": "{{ product_type_val }}"
+                            }
+                        }
+                    </textarea>
+                    <br>
+                        <button style="width:160px" class="btn btn-primary btn-user btn-block" onclick="copyText()">
+                            Copy Syntax
+                        </button>
+                </div>
+                <div class="col-sm">
+                    <label for="tv_webhook"><strong>Trading View Webhook URL</strong></label>
+                    <textarea class="form-control" id="tv_webhook" rows="1">https://mat-rajan-app.herokuapp.com/tv_webhook</textarea>
+                    <br>
+                    <button style="width:80px" class="btn btn-primary btn-user btn-block" onclick="copytvwebhook()">
+                        Copy
+                    </button>
+                </div>
+                <div class="col-sm">
+                    <label for="cl_webhook"><strong>Chartlink Webhook URL</strong></label>
+                    <p><strong>Alert Name:</strong> eg) NSE,buy / NSE,sell</p>
+                    <textarea class="form-control" id="cl_webhook" rows="1">https://mat-rajan-app.herokuapp.com/chartlink_webhook</textarea>
+                    <br>
+                    <button style="width:80px" class="btn btn-primary btn-user btn-block" onclick="copyclwebhook()">
+                        Copy
+                    </button>
+                </div>
+            </div>
+            <hr>
+    </div>
+
+</body>
+<script>
+	function copyText() {
+		var copyText = document.getElementById("TV-alice Syntax");
+		copyText.select();
+		copyText.setSelectionRange(0, 99999)
+		document.execCommand("copy");
+		alert("Copied the Syntax! Good Luck!");
+		}
+	function copytvwebhook() {
+		var copyText = document.getElementById("tv_webhook");
+		copyText.select();
+		copyText.setSelectionRange(0, 99999)
+		document.execCommand("copy");
+		alert("Copied the TradingView Webhook!");
+        }
+    function copyclwebhook() {
+    var copyText = document.getElementById("cl_webhook");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999)
+    document.execCommand("copy");
+    alert("Copied the Chartlink Webhook!");
+        }
+    function validateeditForm() {
+    var x = document.forms["syntax"]["symbol"].value;
+    if (x == "" || x == null)
+    {
+        alert("Symbol cannot be empty");
+        return false;
+    }
+    }
+    var xhr=new XMLHttpRequest();
+        xhr.open("GET","/static/dataset/scrip.json");
+        xhr.onload=function(){
+            data = JSON.parse(xhr.responseText);
+            console.log(data)
+            autocomplete(document.getElementById("symbol"), data);
+        }
+        xhr.send();
+</script>
+{% endblock content %}

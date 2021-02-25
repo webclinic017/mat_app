@@ -1,0 +1,236 @@
+{% extends "layout.html"%} 
+{% block content %}
+<head>
+    <title>MAT App - groups</title>
+
+    <!-- Custom styles for this page -->
+    <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+</head>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div style="margin-left: 40%;text-align: center;">
+            <div class="col-lg-6 mb-4">
+                <div class="bg-{{ category }} text-white shadow">
+                    <div class="alert-dismissible close" onclick="this.parentElement.style.display='none';">&times;</div>
+                    <div class="card-body">
+                        <strong>{{ category }}!</strong> 
+                        <div class="text-white-70 small">{{ message }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+<body>
+        <div class="container-fluid">
+            <!-- Page Heading -->
+            <h2 class="h3 mb-2 text-gray-800">Group Management</h2>
+
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Group List</h6>
+                    <button style="float:right" class="btn btn-primary" type="button" data-toggle="modal" data-target="#createGroupModal"><i
+                        class="fas fas fa-users fa-sm text-white-50"></i>&nbsp;Add Group</button>
+                    <!-- Create Group Modal -->
+                    <div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog" aria-labelledby="creategroupLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="creategroupLabel">Add New Group</h5>
+                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                </div>
+                                <form class="user" id="newgroup" action="/creategroup" method="post" onsubmit="return validatenewForm()">
+                                    <div class="modal-body">
+                                        <div class="col-sm mb-3 mb-sm-0">
+                                            <label for="group_name">Group Name</label>
+                                            <input type="text" class="form-control" id="group_name" name="group_name">
+                                        </div>
+                                        <div class="col-sm">
+                                            <label for="grp_total_cap">Total Capital</label>
+                                            <input type="text" class="form-control" id="grp_total_cap" name="grp_total_cap">
+                                        </div>
+                                        <div class="col-sm">
+                                            <label for="grp_cap_per_trade">Capital per Trade</label>
+                                            <input type="text" class="form-control" id="grp_cap_per_trade" name="grp_cap_per_trade">
+                                        </div>
+                                        <div class="col-sm">
+                                            <label for="grp_mx_total_prf">Max Profit Limit</label>
+                                            <input type="number" class="form-control" id="grp_mx_total_prf" name="grp_mx_total_prf">
+                                        </div>
+                                        <div class="col-sm">
+                                            <label for="grp_mx_total_ls">Max Loss Limit</label>
+                                            <input type="number" class="form-control" id="grp_mx_total_ls" name="grp_mx_total_ls">
+                                        </div>
+                                        <div class="col-sm">
+                                            <label for="grp_mx_prf_smbl">Max Profit per symbol(%)</label>
+                                            <input type="text" class="form-control" id="grp_mx_prf_smbl" name="grp_mx_prf_smbl">
+                                        </div>
+                                        <div class="col-sm">
+                                            <label for="grp_mx_ls_smbl">Max Loss per symbol(%)</label>
+                                            <input type="text" class="form-control" id="grp_mx_ls_smbl" name="grp_mx_ls_smbl">
+                                        </div>
+                                        <div class="col-sm">
+                                            <label for="group_desc">Description</label>
+                                            <input type="text" class="form-control" id="group_desc" name="group_desc">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer"><button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                                    <button class="btn btn-primary" type="submit">Add Group</button></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Group Name</th>
+                                    <th>No.of Clients</th>
+                                    <th>Total Capital</th>
+                                    <th>Capital/Trade</th>
+                                    <th>Mx.prf Lmt</th>
+                                    <th>Mx.Ls Lmt</th>
+                                    <th>Description</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for group in group_list %}
+                                    <tr>
+                                        <td> {{ group.group_name }}</td>
+                                        <td>{{ group.client_count }}</td>
+                                        <td>{{ group.grp_total_cap }}</td>
+                                        <td>{{ group.grp_cap_per_trade }}</td>
+                                        <td>{{ group.grp_mx_total_prf }}</td>
+                                        <td>{{ group.grp_mx_total_ls }}</td>
+                                        <td>{{ group.group_desc }}</td>
+                                        <td style="text-align: center;">
+                                            <button class="btn btn-circle btn-sm" type="button" data-toggle="modal" data-target="#editModal{{ group.group_id }}"><i class="fas fas fa-edit fa-2x" ></i></button>
+                                            <button class="btn btn-circle btn-sm" type="button" data-toggle="modal" data-target="#deleteModal{{ group.group_id }}"><i class="fas fa-trash-alt fa-2x" ></i></button>
+                                            
+                                            <!-- Delete confirm Modal -->
+                                            <form action="/deletegroup" method="post">
+                                                <input class="field" type="hidden" name="del_group_id" value={{ group.group_id }}>
+                                                <input class="field" type="hidden" name="delete" value="delete">
+                                                <div class="modal fade" id="deleteModal{{ group.group_id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="deleteModalLabel">Delete Group</h5>
+                                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                                            </div>
+                                                                <div class="modal-body">
+                                                                    <p>Are you sure you want to remove the group <strong>{{ group.group_name }}</strong>.</p>
+                                                                </div>
+                                                                <div class="modal-footer"><button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                                                                <button class="btn btn-primary" type="submit">Confirm</button></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <!-- Edit Group Modal -->
+                                            <form action="/editgroup" id="editgroup" method="post" onsubmit="return validateeditForm()">
+                                                <input class="field" type="hidden" name="edit_group_id" value={{ group.group_id }}>
+                                                <input class="field" type="hidden" name="edit_group_name" value="{{ group.group_name }}">
+                                                <div class="modal fade" id="editModal{{ group.group_id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="editModalLabel">Edit Group</h5>
+                                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="col-sm mb-3 mb-sm-0">
+                                                                    <div class="form-group">
+                                                                        <label style = "float:left" for="groupname">Group Name</label><input type="text" class="form-control" id="groupname" name="groupname" value= "{{ group.group_name }}" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm">
+                                                                    <label style = "float:left" for="grp_total_cap">Total Capital</label>
+                                                                    <input type="text" class="form-control" id="grp_total_cap" name="grp_total_cap" value= "{{ group.grp_total_cap }}">
+                                                                </div>
+                                                                <div class="col-sm">
+                                                                    <label style = "float:left" for="grp_cap_per_trade">Capital per Trade</label>
+                                                                    <input type="text" class="form-control" id="grp_cap_per_trade" name="grp_cap_per_trade" value= "{{ group.grp_cap_per_trade }}">
+                                                                </div>
+                                                                <div class="col-sm">
+                                                                    <label style = "float:left" for="grp_mx_total_prf">Max Profit Limit</label>
+                                                                    <input type="number" class="form-control" id="grp_mx_total_prf" name="grp_mx_total_prf" value= "{{ group.grp_mx_total_prf }}">
+                                                                </div>
+                                                                <div class="col-sm">
+                                                                    <label style = "float:left" for="grp_mx_total_ls">Max Loss Limit</label>
+                                                                    <input type="number" class="form-control" id="grp_mx_total_ls" name="grp_mx_total_ls" value= "{{ group.grp_mx_total_ls }}">
+                                                                </div>
+                                                                <div class="col-sm">
+                                                                    <label style = "float:left" for="grp_mx_prf_smbl">Max Profit per symbol %</label>
+                                                                    <input type="text" class="form-control" id="grp_mx_prf_smbl" name="grp_mx_prf_smbl" value= "{{ group.grp_mx_prf_smbl }}">
+                                                                </div>
+                                                                <div class="col-sm">
+                                                                    <label style = "float:left" for="grp_mx_ls_smbl">Max Loss per symbol %</label>
+                                                                    <input type="text" class="form-control" id="grp_mx_ls_smbl" name="grp_mx_ls_smbl" value= "{{ group.grp_mx_ls_smbl }}">
+                                                                </div>
+                                                                <div class="col-sm">
+                                                                    <label style = "float:left" for="group_desc">Group Description</label>
+                                                                    <input type="text" class="form-control" id="group_desc" name="group_desc" value= "{{ group.group_desc }}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer"><button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                                                            <button class="btn btn-primary" type="submit">Save Changes</button></div>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container-fluid -->
+<script>
+    function validateeditForm() {
+    var xy = document.forms["editgroup"]["grp_total_cap"].value;
+    var yy = document.forms["editgroup"]["grp_cap_per_trade"].value;
+    var xx = document.forms["editgroup"]["grp_mx_total_prf"].value;
+    var zz = document.forms["editgroup"]["grp_mx_total_ls"].value;
+    var xz = document.forms["editgroup"]["grp_mx_prf_smbl"].value;
+    var yz = document.forms["editgroup"]["grp_mx_ls_smbl"].value;
+    var zy = document.forms["editgroup"]["group_desc"].value;
+    if (xy == "" || xy == null || yy == "" || yy == null
+         || xx == "" || xx == null || zz == "" || zz == null
+         || xz == "" || xz == null || yz == "" || yz == null
+         || zy == "" || zy == null)
+    {
+        alert("cannot submit with empty fields");
+        return false;
+    }
+    }
+    function validatenewForm() {
+    var xyz = document.forms["newgroup"]["group_name"].value;
+    var xy = document.forms["newgroup"]["grp_total_cap"].value;
+    var yy = document.forms["newgroup"]["grp_cap_per_trade"].value;
+    var xx = document.forms["newgroup"]["grp_mx_total_prf"].value;
+    var zz = document.forms["newgroup"]["grp_mx_total_ls"].value;
+    var xz = document.forms["newgroup"]["grp_mx_prf_smbl"].value;
+    var yz = document.forms["newgroup"]["grp_mx_ls_smbl"].value;
+    var zy = document.forms["newgroup"]["group_desc"].value;
+    if (xyz == "" || xy == null || xy == "" || xy == null || yy == "" || yy == null
+         || xx == "" || xx == null || zz == "" || zz == null || xz == "" || xz == null
+          || yz == "" || yz == null || zy == "" || zy == null)
+    {
+        alert("cannot submit with empty fields");
+        return false;
+    }
+    }
+</script>
+</body>
+{% endblock content %}

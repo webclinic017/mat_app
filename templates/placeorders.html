@@ -1,0 +1,332 @@
+{% extends "layout.html"%} 
+{% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div style="margin-left: 40%;text-align: center;">
+            <div class="col-lg-6 mb-4">
+                <div class="bg-{{ category }} text-white shadow">
+                    <div class="alert-dismissible close" onclick="this.parentElement.style.display='none';">&times;</div>
+                    <div class="card-body">
+                        <strong>{{ category }}!</strong> 
+                        <div class="text-white-70 small">{{ message }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <head>
+        <script src="/static/js/autocomplete.js"></script>
+    </head>
+<body>
+    <div class="container-fluid">
+        <!-- Group setting Card -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card shadow mb-4">
+                    <div id="myDIV2" class="border-left-success">
+                        <div id="myDIV3" class="border-bottom-success">
+                            <div id="myDIV4" class="card-header-buy py-3">
+                                <h6 class="m-0 font-weight-bold text-light">Place Order</h6>
+                            </div>
+                            <div class="card-body">
+                                <form class="user" action="/submit_order", method='POST' id="placeorder" onsubmit="return validateForm()"> 
+                                    <!-- onsubmit="return validateForm()" -->
+                                    <div class="row">
+                                        <!-- Order Filling form -->
+                                        <div class="col-xl-6 col-md-6 mb-4">
+                                            <div class="card-body">
+                                                <div class="row no-gutters align-items-center">
+                                                    <div class="col mr-2">
+                                                        <p1><strong>Transaction Type</strong></p1>
+                                                        <div class="form-group row">
+                                                            <div class="custom-control custom-radio px-4">
+                                                                <input class="custom-control-input" id="tradetypeRadio1" type="radio" name="tradetypeRadio" onchange="sellside()" checked  value='buy'>
+                                                                <label class="custom-control-label" for="tradetypeRadio1">Buy</label>
+                                                            </div>
+                                                            <div class="custom-control custom-radio">
+                                                                <input class="custom-control-input" id="tradetypeRadio2" type="radio" name="tradetypeRadio" onchange="sellside()" value='sell'>
+                                                                <label class="custom-control-label" for="tradetypeRadio2">Sell</label>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <p1><strong>Product Type</strong></p1>
+                                                        <div class="form-group row">
+                                                            <div class="custom-control custom-radio px-4">
+                                                                <input class="custom-control-input" id="producttypeRadio1" type="radio" name="producttypeRadio" checked onclick="notBO_order()" value='MIS'>
+                                                                <label class="custom-control-label" for="producttypeRadio1">MIS</label>
+                                                            </div>
+                                                            <div class="custom-control custom-radio px-4">
+                                                                <input class="custom-control-input" id="producttypeRadio2" type="radio" name="producttypeRadio" onclick="notBO_order()" value='CNC'>
+                                                                <label class="custom-control-label" for="producttypeRadio2">CNC</label>
+                                                            </div>
+                                                            <div class="custom-control custom-radio px-4">
+                                                                <input class="custom-control-input" id="producttypeRadio3" type="radio" name="producttypeRadio" onclick="notBO_order()" value='CO'>
+                                                                <label class="custom-control-label" for="producttypeRadio3">CO</label>
+                                                            </div>
+                                                            <div class="custom-control custom-radio">
+                                                                <input class="custom-control-input" id="producttypeRadio4" type="radio" name="producttypeRadio" onchange="BO_order()" value='BO'>
+                                                                <label class="custom-control-label" for="producttypeRadio4">BO</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- trade and product type radio Input Card -->
+                                        <div class="col-xl-6 col-md-6 mb-4">
+                                            <div class="card-body">
+                                                <div class="row no-gutters align-items-center">
+                                                    <div class="col mr-2">
+                                                        <p1><strong>Order Type</strong></p1>
+                                                        <div class="form-group row">
+                                                            <div class="custom-control custom-radio px-4">
+                                                                <input class="custom-control-input" id="ordertypeRadio1" type="radio" name="ordertypeRadio" checked value='Market' onclick="notrigger()">
+                                                                <label class="custom-control-label" for="ordertypeRadio1">Mkt</label>
+                                                            </div>
+                                                            <div class="custom-control custom-radio px-4">
+                                                                <input class="custom-control-input" id="ordertypeRadio2" type="radio" name="ordertypeRadio" value='Limit' onclick="notrigger()">
+                                                                <label class="custom-control-label" for="ordertypeRadio2">Lmt</label>
+                                                            </div>
+                                                            <div class="custom-control custom-radio px-4">
+                                                                <input class="custom-control-input" id="ordertypeRadio3" type="radio" name="ordertypeRadio" value='SLMK' onchange="trigger()">
+                                                                <label class="custom-control-label" for="ordertypeRadio3">SL Mkt</label>
+                                                            </div>
+                                                            <div class="custom-control custom-radio">
+                                                                <input class="custom-control-input" id="ordertypeRadio4" type="radio" name="ordertypeRadio" value='SLLT' onchange="trigger()">
+                                                                <label class="custom-control-label" for="ordertypeRadio4">SL Lmt</label>
+                                                            </div>
+                                                        </div>
+                                                        <hr>
+                                                        <p1><strong>Quantity</strong></p1>
+                                                        <div class="form-group row">
+                                                            <div class="custom-control custom-radio px-4">
+                                                                <input class="custom-control-input" id="quantityRadio1" type="radio" name="quantityRadio" checked onchange="auto_fill()" value='Auto'>
+                                                                <label class="custom-control-label" for="quantityRadio1">Auto</label>
+                                                            </div>
+                                                            <div class="custom-control custom-radio">
+                                                                <input class="custom-control-input" id="quantityRadio2" type="radio" name="quantityRadio" onchange="manual_fill()" value='Manual'>
+                                                                <label class="custom-control-label" for="quantityRadio2">Manual</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm mb-3 mb-sm-0">
+                                            <label style="font-size: 12px;" for="symbol">SYMBOL</label>
+                                            <input type="text" class="form-control autocomplete" id="symbol" name="symbol" autocomplete="off">
+                                        </div>
+                                        <div class="col-sm">
+                                            <label style="font-size: 12px;" for="exchange">EXCHANGE</label><select class="form-control" id="exchange" name="exchange">
+                                                <option>NSE</option>
+                                                <option>NFO</option>
+                                                <option>MCX</option>
+                                                <option>BSE</option>
+                                                <option>CDS</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm mb-3 mb-sm-0">
+                                            <label style="font-size: 12px;" for="quantity">QTY (Lotsize:1)</label>
+                                            <input type="number" class="form-control" id="quantity" name="quantity" disabled="true" value='0'>
+                                        </div>
+       
+                                        <div class="col">
+                                            <label style="font-size: 12px;" for="price">PRICE *</label>
+                                            <input type="number" class="form-control" step="0.05" id="price" name="price" value="0.0">
+                                        </div>
+                                        <div class="col">
+                                            <label style="font-size: 12px;" for="triggerprice">TRIGGER PRICE</label>
+                                            <input type="number" class="form-control" step="0.05" id="triggerprice" name="triggerprice" onchange="trigger_warning()" disabled="true">
+                                            <label style="font-size: 10px;color: red;" id="triggerhigh" for="triggerprice" hidden="true">* Trigger Price must be Less than Limit Price</label>
+                                            <label style="font-size: 10px;color: red;" id="triggerlow" for="triggerprice" hidden="true">* Trigger Price must be Greater than Limit Price</label>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="form-group row" id="BO_fields" hidden='true'>
+                                        <div class="col">
+                                            <label style="font-size: 12px;" for="stoploss" >STOP LOSS (ABSOLUTE)</label>
+                                            <input type="number" class="form-control" id="bostoploss" step="0.05" name="bostoploss">
+                                        </div>
+                                        <div class="col">
+                                            <label style="font-size: 12px;" for="target">TARGET (ABSOLUTE)</label>
+                                            <input type="number" class="form-control" id="botarget" step="0.05" name="botarget">
+                                        </div>
+                                        <div class="col">
+                                            <label style="font-size: 12px;" for="trailsl">TRAIL SL (ABSOLUTE)</label>
+                                            <input type="number" class="form-control" id="botrailsl" step="0.05" name="botrailsl">
+                                        </div>
+                                    </div>
+                                    <input class="field" type="hidden" name="submitorder" value="submitorder">
+                                    <button type="submit" style="width:200px" id="myDIV" class="btn btn-success">Place Order</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow mb-4">
+                    <form action="/set_place_order_group" method="POST" id="multiple_select_form">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Choose Group/Clients</h6>
+                        </div>
+                        <div class="row no-gutters align-items-center" style="padding:10px">
+                            <div class="col mr-2">
+                                <div class="card-body">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" id="group_placeorder" type="radio" name="placeorder_set" checked onchange="enable_group_list()" value='group'>
+                                        <label class="custom-control-label" for="group_placeorder">Group</label>
+                                    </div>                                
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" style="margin-left: 100px;" id="custom_placeorder" type="radio" name="placeorder_set" onchange="enable_custom_list()" value='custom'>
+                                        <label class="custom-control-label" for="custom_placeorder">Custom</label>
+                                    </div>
+                                    <br>
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </div>
+                            <div class="card border-left-info col mr-2">
+                                <div class="card-body" style="overflow-y: scroll;height:25vh">
+                                    <div class="form-group row" id="group_values_group">
+                                        <table>
+                                            {% for group in group_list%}
+                                                <tr>
+                                                    <td>
+                                                        <input id="{{ group.group_name }}" type="checkbox" name="selected_values" value="{{ group.group_name }}">
+                                                        <label for="{{ group.group_name }}">{{ group.group_name }}</label>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </div>
+                                    <div class="form-group row" id="group_values_client" hidden="true">
+                                        <table>
+                                            {% for client in client_list%} 
+                                                <tr>
+                                                    <td>
+                                                        <input id="{{ client.client_name }}" type="checkbox" name="selected_values" value="{{ client.broker_id }}">
+                                                        <label for="{{ client.client_name }}">{{ client.client_name }}</label>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <hr>
+                    <div class="card-body" style="height:295px">
+                        <h6 class="m-0 font-weight-bold text-primary">Selected Groups/Clients</h6>
+                        <hr>
+                        <table>
+                            <tbody>
+                                {% for selection in selected_list %}
+                                    <tr>
+                                        <td> {{ selection }}, </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+
+    function sellside() {
+        var element = document.getElementById("myDIV");
+        element.classList.toggle("btn-danger")
+        var element = document.getElementById("myDIV2");
+        element.classList.toggle("border-left-danger");
+        var element = document.getElementById("myDIV3");
+        element.classList.toggle("border-bottom-danger");
+        var element = document.getElementById("myDIV4");
+        element.classList.toggle("card-header-sell");
+    }
+    function BO_order() {
+        document.getElementById('BO_fields').hidden = false;
+    }
+    function notBO_order(){
+        document.getElementById('BO_fields').hidden = true;
+    }
+    function trigger(){
+        document.getElementById('triggerprice').disabled = false;
+    }
+    function notrigger(){
+        document.getElementById('triggerprice').disabled = true;
+    }
+    function manual_fill() {
+        document.getElementById('quantity').disabled = false;
+    }
+    function auto_fill() {
+        document.getElementById('quantity').disabled = true;
+    }
+    function enable_group_list() {
+        document.getElementById('group_values_group').hidden = false;
+        document.getElementById('group_values_client').hidden = true;
+    }
+    function enable_custom_list() {
+        document.getElementById('group_values_client').hidden = false;
+        document.getElementById('group_values_group').hidden = true;
+    }
+    function trigger_warning() {
+        var x = document.forms["placeorder"]["price"].value;
+        var y = document.forms["placeorder"]["triggerprice"].value;
+        var z = document.forms["placeorder"]["tradetypeRadio"].value;
+        if (z == "buy" && y > x){
+                document.getElementById('triggerhigh').hidden = false;
+                document.getElementById('triggerlow').hidden = true;
+                return false;
+            } 
+        if (z == "buy" && y < x){ 
+            document.getElementById('triggerhigh').hidden = true;
+            document.getElementById('triggerlow').hidden = true;
+            return false;
+            }
+        if (z == "sell" && y < x){
+            document.getElementById('triggerlow').hidden = false;
+            document.getElementById('triggerhigh').hidden = true;
+            return false;
+            } 
+        if (z == "sell" && y > x) { 
+            document.getElementById('triggerhigh').hidden = true;
+            document.getElementById('triggerlow').hidden = true;
+            return false;
+            }
+    }
+    function validateForm() {
+        var x = document.forms["placeorder"]["price"].value;
+        var y = document.forms["placeorder"]["triggerprice"].value;
+        var z = document.forms["placeorder"]["tradetypeRadio"].value;
+        var q = document.forms["placeorder"]["quantityRadio"].value;
+        var p = document.forms["placeorder"]["ordertypeRadio"].value;
+        if (z == "buy" && y > x && p != "Market" && p != "Limit" ){
+            alert("Trigger Price must be Less than Limit Price");
+            return false;
+        }
+        if (z == "sell" && y < x && p != "Market" && p != "Limit" ){
+            alert("Trigger Price must be Greater than Limit Price");
+            return false;
+        }
+        }
+        var xhr=new XMLHttpRequest();
+        xhr.open("GET","/static/dataset/scrip.json");
+        xhr.onload=function(){
+            data = JSON.parse(xhr.responseText);
+            console.log(data)
+            autocomplete(document.getElementById("symbol"), data);
+        }
+        xhr.send();
+
+</script>
+{% endblock content %}

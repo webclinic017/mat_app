@@ -1,0 +1,333 @@
+{% extends "layout.html"%} 
+{% block content %}
+<head>
+    <title>DIVI CAP - Clients</title>
+</head>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div style="margin-left: 40%;text-align: center;">
+            <div class="col-lg-6 mb-4">
+                <div class="bg-{{ category }} text-white shadow">
+                    <div class="alert-dismissible close" onclick="this.parentElement.style.display='none';">&times;</div>
+                    <div class="card-body">
+                        <strong>{{ category }}!</strong> 
+                        <div class="text-white-70 small">{{ message }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+<body>
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <!-- Page Heading -->
+            <h2 class="h3 mb-2 text-gray-800">Client Management</h2>
+
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Client List</h6>
+                    <a href="/bulk_login" style="float:right;margin-left:10px" class="btn btn-primary"><i
+                        class="fas far fa-id-card text-white-50"></i>&nbsp;Get Token</a>
+                    <button style="float:right" class="btn btn-primary" type="button" data-toggle="modal" data-target="#createclient"><i
+                        class="fas fa-user-plus fa-sm text-white-50"></i>&nbsp;Add Client</button>
+                    <!-- Create New Modal -->
+                    <div class="modal fade" id="createclient" tabindex="-1" role="dialog" aria-labelledby="createclientLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="createclientLabel">Add New Client</h5>
+                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                </div>
+                                <form class="user" action="/createclient" method="post" id="create_new_modal">
+                                    <div class="modal-body">
+                                        <div class="form-group row">
+                                            <div class="col-sm mb-3 mb-sm-0">
+                                                <input class="field" type="hidden" name="client_new" value="new">
+                                                <label for="broker">Broker*</label><select class="form-control" id="broker" name="broker">
+                                                    {% for broker in broker_list%}
+                                                    <option>{{ broker.broker }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-sm">
+                                                <label for="broker_Id">Broker Id*</label>
+                                                <input type="text" class="form-control" id="broker_Id" name="broker_Id">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm mb-3 mb-sm-0">
+                                                <label for="broker_password">Broker Password*</label>
+                                                <input type="password" class="form-control" id="broker_password" name="broker_password">
+                                            </div>
+                                            <div class="col-sm">
+                                                <label for="broker_2fa">Broker 2FA*</label>
+                                                <input type="password" class="form-control" id="broker_2fa" name="broker_2fa">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm mb-3 mb-sm-0">
+                                                <br>
+                                                <label for="broker_API">Broker API Key (if applicable)</label>
+                                                <input type="text" class="form-control" id="broker_API" name="broker_API">
+                                            </div>
+                                            <div class="col-sm">
+                                                <label for="broker_API_secret">Broker API Secret (if applicable)</label>
+                                                <input type="text" class="form-control" id="broker_API_secret" name="broker_API_secret">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm mb-3 mb-sm-0">
+                                                <label for="group">Group</label><select class="form-control" id="group_name" name="group_name" onchange="show_create_pos_setting()">
+                                                    <option value="" selected></option>
+                                                    {% for group in group_list%}
+                                                        <option>{{ group.group_name}}</option>
+                                                    {% endfor %}
+                                                </select>                                            
+                                            </div>
+                                            <div class="col-sm">
+                                                <label for="mobile_num">Client Mobile</label>
+                                                <input type="text" class="form-control" id="mobile_num" name="mobile_num">
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-group row" id="new_pos_setting1">
+                                            <div class="col-sm mb-3 mb-sm-0">
+                                                <br>
+                                                <label for="cap_per_trade">Capital per Trade</label>
+                                                <input type="text" class="form-control" id="cap_per_trade" name="cap_per_trade" value="0">                                           
+                                            </div>
+                                            <div class="col-sm mb-3 mb-sm-0">
+                                                <label for="mx_prf_smbl">Max Profit per symbol(%)</label>
+                                                <input type="text" class="form-control" id="mx_prf_smbl" name="mx_prf_smbl" value="0.0">
+                                            </div>
+                                            <div class="col-sm">
+                                                <label for="mx_ls_smbl">Max Loss per symbol(%)</label>
+                                                <input type="text" class="form-control" id="mx_ls_smbl" name="mx_ls_smbl" value="0.0">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row" id="new_pos_setting2">
+                                            <div class="col-sm">
+                                                <label for="mx_total_prf">Max Profit Limit</label>
+                                                <input type="number" class="form-control" id="mx_total_prf" name="mx_total_prf" value="0">
+                                            </div>
+                                            <div class="col-sm">
+                                                <label for="mx_total_ls">Max Loss Limit</label>
+                                                <input type="number" class="form-control" id="mx_total_ls" name="mx_total_ls" value="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer"><button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                                    <button class="btn btn-primary" type="submit">Add Client</button></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="client_Table" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Broker Id</th>
+                                    <th>Broker</th>
+                                    <th>Name</th>
+                                    <th>Group</th>
+                                    <th>Login Status</th>
+                                    <th>Account Balance</th>
+                                    <th>Action</th>
+                                    <th>Trade On/Off</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for client in client_list %}
+                                    <tr>
+                                        <td>{{ client.broker_id }}</td>
+                                        <td>{{ client.broker_name }}</td>
+                                        <td>{{ client.client_name }}</td>
+                                        <td>{{ client.group_name }}</td>
+                                        <td style="text-align: center;">
+                                            {% if client.login_status == 'Active' %}
+                                                <div class="led-green"></div>
+                                            {% else %}
+                                                <div class="led-red"></div>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ client.client_balance }}</td>
+                                        <td style="text-align: center;">
+                                                        <button class="btn btn-circle btn-sm" type="button" data-toggle="modal" data-target="#editModal{{ client.broker_id }}"><i class="fas fas fa-edit fa-2x" ></i></button>
+                                                        <button class="btn btn-circle btn-sm" type="button" data-toggle="modal" data-target="#deleteModal{{ client.broker_id }}"><i class="fas fa-trash-alt fa-2x" ></i></button>
+                                                            <!-- Edit Modal -->
+                                                            <form action="/editclient" method="post" id="edit_modal_form">
+                                                                <input class="field" type="hidden" name="ts_client_id" value={{ client.broker_id }}>
+                                                                <input class="field" type="hidden" name="edit" value="edit">
+                                                                <div class="modal fade" id="editModal{{ client.broker_id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                                                                    <div class="modal-dialog" role="document">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title" id="exampleModalLabel">Edit Client</h5>
+                                                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                                                            </div>
+                                                                            <form class="user" action="/createclient" method="post">
+                                                                                <div class="modal-body">
+                                                                                    <div class="form-group row">
+                                                                                        <div class="col-sm">
+                                                                                            <label style = "float:left" for="broker">Broker*</label>
+                                                                                            <input type="text" class="form-control" id="broker" name="broker" value={{ client.broker_name }} disabled>
+                                                                                        </div>
+                                                                                        <div class="col-sm">
+                                                                                            <label style = "float:left" for="Broker_Id">Broker Id*</label>
+                                                                                            <input type="text" class="form-control" id="broker_Id" name="broker_Id" value={{ client.broker_id }} disabled>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="form-group row">
+                                                                                        <div class="col-sm">
+                                                                                            <label style = "float:left" for="broker_password">Broker Password*</label>
+                                                                                            <input type="password" class="form-control" id="broker_password" name="broker_password" value={{ client.broker_password }}>
+                                                                                        </div>
+                                                                                        <div class="col-sm">
+                                                                                            <label style = "float:left" for="broker_2fa">Broker 2FA*</label>
+                                                                                            <input type="password" class="form-control" id="broker_2fa" name="broker_2fa" value={{ client.broker_2fa }}>
+                                                                                        </div>                                                                                        
+                                                                                    </div>
+                                                                                    <div class="form-group row">
+                                                                                        <div class="col-sm">
+                                                                                            <br>
+                                                                                            <label style = "float:left" for="broker_API">Broker API (if applicable)</label>
+                                                                                            <input type="text" class="form-control" id="broker_API" name="broker_API" value={{ client.broker_api }}>
+                                                                                        </div>
+                                                                                        <div class="col-sm">
+                                                                                            <label style = "float:left" for="broker_API">Broker API Secret (if applicable)</label>
+                                                                                            <input type="text" class="form-control" id="Broker_API" name="broker_API" value={{ client.broker_api }}>
+                                                                                        </div>                                                                                        
+                                                                                    </div>
+                                                                                    <div class="form-group row">
+                                                                                        <div class="col-sm">
+                                                                                            <label style = "float:left" for="group">Group</label><select class="form-control" id="group_name" name="group_name" onchange="show_edit_pos_setting()">
+                                                                                                <option selected>{{ client.group_name }}</option>
+                                                                                                <option></option>
+                                                                                                {% for group in group_list%}   
+                                                                                                    <option>{{ group.group_name}}</option>
+                                                                                                {% endfor %}
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="col-sm">
+                                                                                            <label style = "float:left" for="mobile_num">Client Mobile</label>
+                                                                                            <input type="text" class="form-control" id="mobile_num" name="mobile_num" value={{ client.mobile_num }}>
+                                                                                        </div>
+                                                                                    </div>                                                                                      
+                                                                                    <hr>
+                                                                                    <div class="form-group row" id="pos_setting1">
+                                                                                        <div class="col-sm mb-3 mb-sm-0">
+                                                                                            <br>
+                                                                                            <label for="cap_per_trade">Capital per Trade</label>
+                                                                                            <input type="text" class="form-control" id="cap_per_trade" name="cap_per_trade" value={{ client.cap_per_trade }}>                                           
+                                                                                        </div>
+                                                                                        <div class="col-sm mb-3 mb-sm-0">
+                                                                                            <label for="mx_prf_smbl">Max Profit per symbol(%)</label>
+                                                                                            <input type="text" class="form-control" id="mx_prf_smbl" name="mx_prf_smbl" value={{ client.mx_prf_smbl }}>
+                                                                                        </div>
+                                                                                        <div class="col-sm">
+                                                                                            <label for="mx_ls_smbl">Max Loss per symbol(%)</label>
+                                                                                            <input type="text" class="form-control" id="mx_ls_smbl" name="mx_ls_smbl" value={{ client.mx_ls_smbl }}>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="form-group row" id="pos_setting2">
+                                                                                        <div class="col-sm">
+                                                                                            <label for="mx_total_prf">Max Profit Limit</label>
+                                                                                            <input type="number" class="form-control" id="mx_total_prf" name="mx_total_prf" value={{ client.mx_total_prf }}>
+                                                                                        </div>
+                                                                                        <div class="col-sm">
+                                                                                            <label for="mx_total_ls">Max Loss Limit</label>
+                                                                                            <input type="number" class="form-control" id="mx_total_ls" name="mx_total_ls" value={{ client.mx_total_ls }}>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="modal-footer"><button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                                                                                <button class="btn btn-primary" type="submit">Save Changes</button></div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                            <!-- Delete confirm Modal -->
+                                                            <form action="/deleteclient" method="post">
+                                                                <input class="field" type="hidden" name="ts_client_id" value={{ client.broker_id }}>
+                                                                <input class="field" type="hidden" name="delete" value="delete">
+                                                                <div class="modal fade" id="deleteModal{{ client.broker_id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                                                    <div class="modal-dialog" role="document">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title" id="exampleModalLabel">Delete Client</h5>
+                                                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                                                            </div>
+                                                                                <div class="modal-body">
+                                                                                    <p>Are you sure you want to remove the Client <strong>{{ client.client_name }} id: {{ client.broker_id }}</strong>.</p>
+                                                                                </div>
+                                                                                <div class="modal-footer"><button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                                                                                <button class="btn btn-primary" type="submit">Confirm</button></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                        <!-- <a class="collapse-item fas fas fa-edit" href="/positionsizing">&nbsp; &nbsp;</a>
+                                        <a class="collapse-item fas fa-trash-alt" href="/positionsizing"></a> -->
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <form action="/createclient" method="post">
+                                                {% if client.trade_status == 'on' %}
+                                                    <input class="field" type="hidden" name="ts_client_id" value={{ client.broker_id }}>
+                                                    <input class="field" type="hidden" name="trade_status" value="off">
+                                                    <button class="btn btn-circle btn-sm" type="submit"><i class="fas fa-toggle-on fa-2x"></i>on</button>
+                                                    <!-- <a type="submit" class="collapse-item fas fa-toggle-on fa-2x" href="/createclient" ></a> -->
+                                                {% else %}
+                                                    <input class="field" type="hidden" name="ts_client_id" value={{ client.broker_id }}>
+                                                    <input class="field" type="hidden" name="trade_status" value="on">
+                                                    <button class="btn btn-circle btn-sm" type="submit"><i class="fas fa-toggle-off fa-2x"></i>off</button>
+                                                    <!-- <a type="submit" class="collapse-item fas fa-toggle-off fa-2x" href="/createclient"></a> -->
+                                                {% endif %}
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container-fluid -->
+
+    </div>
+    <!-- End of Main Content -->
+</body>
+<script>
+    function show_edit_pos_setting() {
+        var x = document.forms["edit_modal_form"]["group_name"].value;
+        if (x == "" || x == null){
+            document.getElementById('pos_setting1').hidden = false;
+            document.getElementById('pos_setting2').hidden = false;
+        }
+        else {
+            document.getElementById('pos_setting1').hidden = true;
+            document.getElementById('pos_setting2').hidden = true;
+        }
+        }
+        function show_create_pos_setting() {
+        var y = document.forms["create_new_modal"]["group_name"].value;
+        if (y == "" || y == null){
+            document.getElementById('new_pos_setting1').hidden = false;
+            document.getElementById('new_pos_setting2').hidden = false;
+        }
+        else {
+            document.getElementById('new_pos_setting1').hidden = true;
+            document.getElementById('new_pos_setting2').hidden = true;
+        }
+        }
+</script>
+{% endblock content %}

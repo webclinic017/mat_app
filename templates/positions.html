@@ -1,0 +1,148 @@
+{% extends "layout.html"%} 
+{% block content %}
+<body>
+    <!-- Begin Page Content -->
+        <br>
+        <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#AliceBlue">AliceBlue</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#Other">Other</a>
+        </li>
+        </ul>
+    
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div id="AliceBlue" class="container-fluid tab-pane active"><br>
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">All Positions</h1>
+                    <a onclick="download_table_as_csv('Aliceblue_Positions');" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                            class="fas fa-download fa-sm text-white-50"></i> Download Report</a>
+                </div>
+                <!-- DataTable 1 -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Today's Positions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="Aliceblue_Positions" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Quantity</th>
+                                        <th>Product</th>
+                                        <th>Buy Price</th>
+                                        <th>Sell Price</th>
+                                        <th>P&L</th>
+                                        <th>Client</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for position in all_positions_list%}
+                                        <tr>
+                                            <td>{{ position.trading_symbol }}</td>
+                                            <td>{{ position.net_quantity }}</td>
+                                            <td>{{ position.product }}</td>
+                                            <td>{{ position.average_buy_price }}</td>
+                                            <td>{{ position.average_sell_price_mtm }}</td>
+                                            <td>{{ position.pnl }}</td>
+                                            <td>{{ position.client_id }}</td>
+                                            <td>{{ position.status }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="Other" class="container-fluid tab-pane fade"><br>
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">All Positions</h1>
+                    <a onclick="download_table_as_csv('Other_Positions');" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                            class="fas fa-download fa-sm text-white-50"></i> Download Report</a>
+                </div>
+                <!-- DataTable 2 -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Today's Positions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="Other_Positions" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Quantity</th>
+                                        <th>Product</th>
+                                        <th>Buy Price</th>
+                                        <th>Sell Price</th>
+                                        <th>P&L</th>
+                                        <th>Client</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+<script>
+    // To download to XLS
+    // function exportF(elem) {
+    //     var table = document.getElementById("dataTable");
+    //     var html = table.outerHTML;
+    //     var url = 'data:application/vnd.ms-excel,' + escape(html); // Set your html table into url 
+    //     elem.setAttribute("href", url);
+    //     elem.setAttribute("download", "export.xls"); // Choose the file name
+    //     return false;
+    //         }
+    // Quick and simple export target #table_id into a csv
+    function download_table_as_csv(table_id, separator = ',') {
+        // Select rows from table_id
+        var rows = document.querySelectorAll('table#' + table_id + ' tr');
+        // Construct csv
+        var csv = [];
+        for (var i = 0; i < rows.length; i++) {
+            var row = [], cols = rows[i].querySelectorAll('td, th');
+            for (var j = 0; j < cols.length; j++) {
+                // Clean innertext to remove multiple spaces and jumpline (break csv)
+                var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+                // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+                data = data.replace(/"/g, '""');
+                // Push escaped string
+                row.push('"' + data + '"');
+            }
+            csv.push(row.join(separator));
+        }
+        var csv_string = csv.join('\n');
+        // Download it
+        var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+        var link = document.createElement('a');
+        link.style.display = 'none';
+        link.setAttribute('target', '_blank');
+        link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+{% endblock content %}
