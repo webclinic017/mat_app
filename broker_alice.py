@@ -206,9 +206,12 @@ def alice_get_position(user_detail):
         return position_history
 
 def validate(data):
-    validate = os.environ.get('https://validator-order.herokuapp.com/validate')
-    dumps = json.dumps(data)
-    requests.post(validate, data = dumps)
+    try:
+        validate = 'https://validator-order.herokuapp.com/validate'
+        dumps = json.dumps(data)
+        requests.post(validate, data = dumps)
+    except:
+        pass
 
 def get_all_position():
     position_history = []

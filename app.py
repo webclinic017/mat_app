@@ -397,7 +397,7 @@ def submit_order():
         else:
             quantity = request.form['quantity']
         if order_type == 'Market' or order_type == 'Limit':
-            trigger_price = None,
+            trigger_price = ""
         else:
             trigger_price = request.form['triggerprice']
         order_data = {'transaction_type':request.form['tradetypeRadio'],
