@@ -242,7 +242,7 @@
     </div>
 </body>
 <script>
-
+    //Form validations
     function sellside() {
         var element = document.getElementById("myDIV");
         element.classList.toggle("btn-danger")
@@ -310,12 +310,31 @@
         var z = document.forms["placeorder"]["tradetypeRadio"].value;
         var q = document.forms["placeorder"]["quantityRadio"].value;
         var p = document.forms["placeorder"]["ordertypeRadio"].value;
+        var r = document.forms["placeorder"]["exchange"].value;
+        var s = document.forms["placeorder"]["symbol"].value;
+        var t = document.forms["placeorder"]["quantity"].value;
         if (z == "buy" && y > x && p != "Market" && p != "Limit" ){
             alert("Trigger Price must be Less than Limit Price");
             return false;
         }
         if (z == "sell" && y < x && p != "Market" && p != "Limit" ){
             alert("Trigger Price must be Greater than Limit Price");
+            return false;
+        }
+        if (p == "Limit" && (x == 0.0 || x == '')){
+            alert("Please Enter a Valid Limit Price");
+            return false;
+        }
+        if (s == ""){
+            alert("Symbol Cannot be Empty");
+            return false;
+        }
+        if (q == "Auto" && (r == 'NFO' || r == 'MCX' || r == 'CDS')){
+            alert("Auto Quantity only Supported for Equity");
+            return false;
+        }
+        if (q == "Manual" && (t == '' || t == 0)){
+            alert("Quantity cannot be Zero");
             return false;
         }
         }

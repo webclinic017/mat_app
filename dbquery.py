@@ -10,8 +10,8 @@ config_file  = 'config.ini'
 config = ConfigParser()
 config.read(config_file)
 
-# db_URI= config.get('config','DATABASE_URL2') #Local postgres
-db_URI= config.get('config','DATABASE_URL_Hero') # HerokuDB
+db_URI= config.get('config','DATABASE_URL2') #Local postgres
+# db_URI= config.get('config','DATABASE_URL_Hero') # HerokuDB
 
 class Database:
     def __init__(self, name):

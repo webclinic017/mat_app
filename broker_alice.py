@@ -74,6 +74,7 @@ def addnew_alice_user(broker_Id, broker_password, broker_2fa):
 
 def alice_bulk_login():
     alice_user_detail = dbquery.get_alice_user_detail()
+    a = 'b'
     for i in range(len(alice_user_detail)):
         username = alice_user_detail[i]['broker_id']
         password = alice_user_detail[i]['broker_password']
@@ -82,20 +83,26 @@ def alice_bulk_login():
         token_date = dbquery.fetch_token_date(username)
         Current_Date = date.today()
         if token_date != str(Current_Date):
-            if i==0:
-                access_token = token_generator(username, password, twoFA)
+            if a =='b':
                 try:
-                    scrip_lastupdated = os.path.getmtime("static/dataset/scrip.json")
-                    modificationTime = time.strftime('%Y-%m-%d', time.localtime(scrip_lastupdated))
-                    Current_Date = str(date.today())
-                    if Current_Date != modificationTime:
+                    access_token = token_generator(username, password, twoFA)
+                    try:
+                        scrip_lastupdated = os.path.getmtime("static/dataset/scrip.json")
+                        modificationTime = time.strftime('%Y-%m-%d', time.localtime(scrip_lastupdated))
+                        Current_Date = str(date.today())
+                        if Current_Date != modificationTime:
+                            alice = get_alice_obj(access_token)
+                            a = 'c'
+                            t = Thread(target=update_scrip, args=[alice])
+                            t.start()
+                    except:
                         alice = get_alice_obj(access_token)
+                        a = 'c'
                         t = Thread(target=update_scrip, args=[alice])
                         t.start()
                 except:
-                    alice = get_alice_obj(access_token)
-                    t = Thread(target=update_scrip, args=[alice])
-                    t.start()
+                    a = 'b'
+                    continue
             else:
                 access_token = get_token_only(username, password, twoFA)
             alice = get_alice_obj(access_token)
@@ -199,7 +206,7 @@ def alice_get_position(user_detail):
         return position_history
 
 def validate(data):
-    validate = 'https://validator-order.herokuapp.com/validate'
+    validate = os.environ.get('https://validator-order.herokuapp.com/validate')
     dumps = json.dumps(data)
     requests.post(validate, data = dumps)
 

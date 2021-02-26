@@ -94,6 +94,7 @@ def dashboard():
         total_orders = 0
         total_trades = 0
         total_pnl = 0
+        client_count = 0
         for client in client_list:
             client_pnl = client['client_pnl']
             total_pnl += client_pnl
@@ -377,8 +378,9 @@ def submit_order():
         symbol = request.form['symbol']
         order_type = request.form['ordertypeRadio']
         price = float(request.form['price'])
+        exchange = request.form['exchange']
         try:
-            if price == 0.0:
+            if price == 0.0 and (exchange == "NSE" or exchange == "BSE"):
                 Current_Date = date.today()
                 Next_Date = date.today() + timedelta(days=1)
                 ysymbol ="{0}{1}".format(symbol,".NS")
@@ -389,6 +391,7 @@ def submit_order():
         except:
             flash("Market closed or Price not availble!", "warning")
             return redirect(url_for('placeorders'))
+            
         if quantity_type == 'Auto':
             quantity = 0
         else:
@@ -399,7 +402,7 @@ def submit_order():
             trigger_price = request.form['triggerprice']
         order_data = {'transaction_type':request.form['tradetypeRadio'],
                     'symbol':symbol,
-                    'exchange':request.form['exchange'],
+                    'exchange':exchange,
                     'quantity':quantity,
                     'quantity_type':request.form['quantityRadio'],
                     'price':price,

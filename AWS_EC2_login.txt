@@ -1,0 +1,14 @@
+ec2-13-232-251-104.ap-south-1.compute.amazonaws.com:3389
+
+Administrator
+
+6!Ns9uZH;CVZN&C5@hRqFz%4M;&(diEC
+
+
+github accesstoken
+
+c1e5925aac038516eb3ec3a48fb82e9451c5c7bc
+
+http://65.0.154.200/
+
+test = os.environ.get('https://validator-order.herokuapp.com/validate')
