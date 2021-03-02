@@ -83,7 +83,7 @@ def bulk_login():
         broker_alice.alice_bulk_login()
         return redirect(url_for('clients'))
     except:
-        flash("Check your internet connection", "error")
+        flash("Oops something went wrong Retry!", "error")
         return redirect(url_for('clients'))
 
 @app.route('/dashboard')
@@ -299,10 +299,13 @@ def comporders():
 @app.route('/cancelorder',  methods=['POST'])
 def cancelorder():
     if request.method=="POST":
-        client_id = request.form['client_id']
-        oms_id = request.form['oms_order_id']
-        broker_alice.cancel_order(client_id, oms_id)
-    flash("Order has been cancelled","success")
+        oms_ids = request.form.getlist('oms_order_id')
+        for i in range(len(oms_ids)):
+            club = oms_ids[i].split(":")
+            oms_id = club[0]
+            client_id = club[1]
+            broker_alice.cancel_order(client_id, oms_id)
+    flash("Orders has been cancelled","success")
     return redirect(url_for('comporders'))
 
 @app.route('/positions')
@@ -502,4 +505,4 @@ def chartlink_webhook():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

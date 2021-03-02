@@ -91,44 +91,43 @@
                         <!-- Pending Order DataTable -->
                         <div class="card shadow mb-4">
                             <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="Aliceblue_pending_Orders" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>Symbol</th>
-                                                <th>Side</th>
-                                                <th>Quantity</th>
-                                                <th>Price</th>
-                                                <th>Product Type</th>
-                                                <th>Order Type</th>
-                                                <th>Client</th>
-                                                <th>Order Time </th>
-                                                <th>Status</th>
-                                                <th>Cancel</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                {% for order in order_pending_list %}
-                                                    <tr>
-                                                        <td>{{ order.trading_symbol }} - {{ order.exchange }}</td>
-                                                        <td>{{ order.transaction_type }}</td>
-                                                        <td>{{ order.quantity }}</td>
-                                                        <td>{{ order.price }}</td>
-                                                        <td>{{ order.product_type }}</td>
-                                                        <td>{{ order.order_type }}</td>
-                                                        <td>{{ order.client_id }}</td>
-                                                        <td>{{ order.order_entry_time }}</td>
-                                                        <td>{{ order.order_status }}</td>
-                                                        <form action="/cancelorder" method="post">
-                                                            <input type="hidden" value="{{ order.client_id }}" name="client_id">
-                                                            <input type="hidden" value="{{ order.oms_order_id }}" name="oms_order_id">
-                                                            <td class="text-center"><button class="btn btn-danger btn-circle" type="submit"><i class="fas fas fa-trash" ></i></button></td>
-                                                        </form>
-                                                    </tr>
-                                                {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <form action="/cancelorder" method="POST">
+                                    <button class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm" style="float:right;" type="submit">Cancel Orders</button><br></br>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="Aliceblue_pending_Orders" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Symbol</th>
+                                                    <th>Side</th>
+                                                    <th>Quantity</th>
+                                                    <th>Price</th>
+                                                    <th>Product Type</th>
+                                                    <th>Order Type</th>
+                                                    <th>Client</th>
+                                                    <th>Order Time </th>
+                                                    <th>Status</th>
+                                                    <th>Cancel</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    {% for order in order_pending_list %}
+                                                        <tr>
+                                                            <td>{{ order.trading_symbol }} - {{ order.exchange }}</td>
+                                                            <td>{{ order.transaction_type }}</td>
+                                                            <td>{{ order.quantity }}</td>
+                                                            <td>{{ order.price }}</td>
+                                                            <td>{{ order.product_type }}</td>
+                                                            <td>{{ order.order_type }}</td>
+                                                            <td>{{ order.client_id }}</td>
+                                                            <td>{{ order.order_entry_time }}</td>
+                                                            <td>{{ order.order_status }}</td>
+                                                            <td class="text-center"><input id="{{ order.oms_order_id }}" type="checkbox" name="oms_order_id" value="{{ order.oms_order_id }}:{{ order.client_id }}"></td>
+                                                        </tr>
+                                                    {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
