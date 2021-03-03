@@ -136,6 +136,23 @@ def client_count():
         client_count = db.fetchone()[0]
         return client_count
 
+def client_list():
+    with Database(db_URI) as db:
+        db.execute("SELECT * FROM client_table;")
+        ans =db.fetchall()
+        client_list=[]
+        for client in ans:
+            new ={'client_id':client[1],'client_name':client[12]}
+            client_list.append(new)
+        return client_list
+
+def group_list():
+    with Database(db_URI) as db:
+        db.execute("SELECT * FROM group_table;")
+        ans =db.fetchall()
+        group_list = [group[1] for group in ans]
+        return group_list
+
 def client_dash():
     with Database(db_URI) as db:
         db.execute("SELECT * FROM client_table;")
@@ -150,6 +167,7 @@ def client_dash():
                     access_token = token_date[1]
                     alice = broker_alice.get_alice_obj(access_token)
                     balance = alice.get_balance()
+                    net_balance = balance['data']['cash_positions'][0]['net']
                     unrealised = float(balance['data']['cash_positions'][0]['utilized']['unrealised_m2m'])
                     realised = float(balance['data']['cash_positions'][0]['utilized']['realised_m2m'])
                     PnL = unrealised + realised
@@ -172,9 +190,11 @@ def client_dash():
                     PnL = 0
                     ord_count = 0
                     trd_count = 0
+                    net_balance = 0
                     login_status = 'Expired'
             else:
                 PnL = 0
+                net_balance = 0
                 ord_count = 0
                 trd_count = 0
                 login_status = 'Expired'
@@ -189,7 +209,7 @@ def client_dash():
                     'mobile_num': ans[i][8],
                     'client_email': ans[i][9],
                     'login_status': login_status,
-                    'client_balance': ans[i][13],
+                    'client_balance': net_balance,
                     'client_pnl': PnL,
                     'trade_status': ans[i][14],
                     'cap_per_trade': ans[i][16],

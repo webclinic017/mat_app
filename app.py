@@ -321,8 +321,8 @@ def positions():
 def placeorders():
     email = session["user"]
     if "user" in session:
-        client_list = dbquery.client_dash()
-        group_list = dbquery.group_dash()
+        client_list = dbquery.client_list()
+        group_list = dbquery.group_list()
         selected_list = dbquery.selected_list()
         return render_template('placeorders.html', user_email=email, group_list=group_list,
                                  client_list=client_list, selected_list=selected_list)
@@ -334,6 +334,7 @@ def set_place_order_group():
     if request.method == 'POST' and 'placeorder_set' in request.form:
         placeorder_set = request.form['placeorder_set']
         selected_values = request.form.getlist('selected_values')
+        print(selected_values)
         dbquery.update_place_order_set(placeorder_set, selected_values)
         return redirect(url_for('placeorders'))
 
@@ -503,6 +504,5 @@ def chartlink_webhook():
     else:
         return "Out of Trade Time Range"
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

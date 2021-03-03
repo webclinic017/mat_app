@@ -103,11 +103,11 @@
                                                         <p1><strong>Quantity</strong></p1>
                                                         <div class="form-group row">
                                                             <div class="custom-control custom-radio px-4">
-                                                                <input class="custom-control-input" id="quantityRadio1" type="radio" name="quantityRadio" checked onchange="auto_fill()" value='Auto'>
+                                                                <input class="custom-control-input" id="quantityRadio1" type="radio" name="quantityRadio" onchange="auto_fill()" value='Auto'>
                                                                 <label class="custom-control-label" for="quantityRadio1">Auto</label>
                                                             </div>
                                                             <div class="custom-control custom-radio">
-                                                                <input class="custom-control-input" id="quantityRadio2" type="radio" name="quantityRadio" onchange="manual_fill()" value='Manual'>
+                                                                <input class="custom-control-input" id="quantityRadio2" type="radio" name="quantityRadio" checked onchange="manual_fill()" value='Manual'>
                                                                 <label class="custom-control-label" for="quantityRadio2">Manual</label>
                                                             </div>
                                                         </div>
@@ -134,7 +134,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm mb-3 mb-sm-0">
                                             <label style="font-size: 12px;" for="quantity">QTY (Lotsize:1)</label>
-                                            <input type="number" class="form-control" id="quantity" name="quantity" disabled="true" value='0'>
+                                            <input type="number" class="form-control" id="quantity" name="quantity" value='0'>
                                         </div>
        
                                         <div class="col">
@@ -178,29 +178,27 @@
                             <h6 class="m-0 font-weight-bold text-primary">Choose Group/Clients</h6>
                         </div>
                         <div class="row no-gutters align-items-center" style="padding:10px">
-                            <div class="col mr-2">
-                                <div class="card-body">
-                                    <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" id="group_placeorder" type="radio" name="placeorder_set" checked onchange="enable_group_list()" value='group'>
-                                        <label class="custom-control-label" for="group_placeorder">Group</label>
-                                    </div>                                
-                                    <div class="custom-control custom-radio">
-                                        <input class="custom-control-input" style="margin-left: 100px;" id="custom_placeorder" type="radio" name="placeorder_set" onchange="enable_custom_list()" value='custom'>
-                                        <label class="custom-control-label" for="custom_placeorder">Custom</label>
-                                    </div>
-                                    <br>
-                                    <button type="submit" class="btn btn-primary">Update</button>
+                            <div class="card-body">
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" id="group_placeorder" type="radio" name="placeorder_set" checked onchange="enable_group_list()" value='group'>
+                                    <label class="custom-control-label" for="group_placeorder">Group</label>
+                                </div>                                
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" style="margin-left: 100px;" id="custom_placeorder" type="radio" name="placeorder_set" onchange="enable_custom_list()" value='custom'>
+                                    <label class="custom-control-label" for="custom_placeorder">Custom</label>
                                 </div>
+                                <br>
+                                <button type="submit" class="btn btn-primary">Update</button>
                             </div>
-                            <div class="card border-left-info col mr-2">
+                            <div class="card border-left-info" style="width:70%">
                                 <div class="card-body" style="overflow-y: scroll;height:25vh">
                                     <div class="form-group row" id="group_values_group">
                                         <table>
                                             {% for group in group_list%}
                                                 <tr>
                                                     <td>
-                                                        <input id="{{ group.group_name }}" type="checkbox" name="selected_values" value="{{ group.group_name }}">
-                                                        <label for="{{ group.group_name }}">{{ group.group_name }}</label>
+                                                        <input id="{{ group.group_name }}" type="checkbox" name="selected_values" value="{{ group }}">
+                                                        <label for="{{ group.group_name }}">{{ group }}</label>
                                                     </td>
                                                 </tr>
                                             {% endfor %}
@@ -211,8 +209,8 @@
                                             {% for client in client_list%} 
                                                 <tr>
                                                     <td>
-                                                        <input id="{{ client.client_name }}" type="checkbox" name="selected_values" value="{{ client.broker_id }}">
-                                                        <label for="{{ client.client_name }}">{{ client.client_name }}</label>
+                                                        <input id="{{ client.client_name }}" type="checkbox" name="selected_values" value="{{ client.client_id }}">
+                                                        <label for="{{ client.client_name }}">{{ client.client_name }}({{ client.client_id }})</label>
                                                     </td>
                                                 </tr>
                                             {% endfor %}
