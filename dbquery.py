@@ -275,7 +275,7 @@ def fetch_token_date(username):
 
 def fetch_access_token(username):
     with Database(db_URI) as db:
-        db.execute("SELECT access_token FROM client_table WHERE broker_id=%s;", (username,))
+        db.execute("""SELECT access_token FROM client_table WHERE broker_id=%s;""", (username,))
         access_token = db.fetchone()[0]
         return (access_token)
 
@@ -297,6 +297,7 @@ def update_place_order_set(placeorder_set, selected_values):
             else:
                 db.execute("""UPDATE client_table SET place_order='yes' WHERE broker_id in(%s);""", (value,))
                 db.execute("""UPDATE place_order_setting SET place_order='custom';""")
+    return "updated"
 
 def fetch_place_order_setting():
     with Database(db_URI) as db:

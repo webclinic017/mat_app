@@ -334,7 +334,6 @@ def set_place_order_group():
     if request.method == 'POST' and 'placeorder_set' in request.form:
         placeorder_set = request.form['placeorder_set']
         selected_values = request.form.getlist('selected_values')
-        print(selected_values)
         dbquery.update_place_order_set(placeorder_set, selected_values)
         return redirect(url_for('placeorders'))
 
@@ -389,7 +388,7 @@ def submit_order():
                 Next_Date = date.today() + timedelta(days=1)
                 ysymbol ="{0}{1}".format(symbol,".NS")
                 data = yf.download(ysymbol, start=Current_Date, end=Next_Date)
-                price = float(data['Close'])
+                price =  round(float(data['Close']),2)
             else:
                 price = request.form['price']
         except:
