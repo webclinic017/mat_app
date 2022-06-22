@@ -10,8 +10,8 @@ import json
 import pandas as pd
 import os.path, time
 
-api_secret = 're4kOfrybl8UXS3XPB3zWGbhL1rEsdw2rEydFME353BVuDdkArzeMoDji4iLo5cz'
-app_id = 'KoemGSfEvi'
+api_secret = '' #Aliceblue API app secret
+app_id = '' #Aliceblue API app id
 
 def update_scrip(alice):
     symbol =[]
