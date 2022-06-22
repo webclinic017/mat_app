@@ -32,37 +32,7 @@ heroku run bash
 ====================================================================!!!!!!!!!!! 
 Make sure virtual env is deactivated during deployment.
 Make Sure to change any file path used in dev app to /app/.. folder before deploying to heroku
-Deploy to Heroku from cmd
-git init
-heroku git:remote -a mat-rajan-app
-git status
-git add .
-git commit -am "initial commit"
-git push heroku master
-======
-update the scheduled job
-heroku ps:scale clock=1
-==================
-heroku logs --tail   /   heroku logs -a mat-rajan-app --tail
-heroku run bash
-==================================================================
-cli restart command;
-heroku ps:stop worker
-heroku ps:restart
-TV Webhook URL : https://mat-rajan-app.herokuapp.com/quickey_webhook
-==================================================================
-Update to github
-git init
-git status
-git add -A
-git commit -m "Initial Commit"
-git push https://github.com/youngking1686/mat_app.git main
 
-=============
-pull from git
-git init
-git pull https://github.com/youngking1686/mat_app.git main
-git reset --hard https://github.com/youngking1686/EQ-Quickey.git main (only when there is a conflict and you know it)
 
 
 
